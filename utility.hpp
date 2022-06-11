@@ -53,6 +53,7 @@ namespace Geneva{
         template<class U1, class U2>
         pair(pair<U1, U2> &&other) : first(other.first), second(other.second) {}
     };
+
 }
 #ifndef SJTU_UTILITY_HPP
 #define SJTU_UTILITY_HPP

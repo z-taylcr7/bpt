@@ -44,21 +44,21 @@ namespace Geneva {
             }
 
             ~DoublyLinkedList() {
-                Node *temp = head;
+                Node *tmp = head;
                 while (head != nullptr) {
                     head = head->next;
-                    delete temp;
-                    temp = head;
+                    delete tmp;
+                    tmp = head;
                 }
             }
 
             void clear() {
                 listSize = 0;
-                Node *temp = head;
+                Node *tmp = head;
                 while (head != nullptr) {
                     head = head->next;
-                    delete temp;
-                    temp = head;
+                    delete tmp;
+                    tmp = head;
                 }
                 head = new Node(), tail = new Node();
                 head->next = tail, tail->pre = head;
@@ -157,11 +157,11 @@ namespace Geneva {
 
         T read_File(int offset) {
             file = fopen(filename.c_str(), "rb");
-            T temp;
+            T tmp;
             fseek(file, offset, SEEK_SET);
-            fread(reinterpret_cast<char *>(&temp), sizeof(T), 1, file);
+            fread(reinterpret_cast<char *>(&tmp), sizeof(T), 1, file);
             fclose(file);
-            return temp;
+            return tmp;
         }
 
         void update_File(int offset, const T &o) {
@@ -182,17 +182,17 @@ namespace Geneva {
         }
 
     public:
-        explicit MemoryPool(const string &_filename, const preface &ex = preface{}, int _capacity = 100)
+        explicit MemoryPool(const string &_filename, const preface &pre = preface{}, int _capacity = 120)
                 : filename(_filename), cache(_capacity), hashmap() {
             file = fopen(filename.c_str(), "rb");
-            if (file == NULL) {
+            if (file == nullptr) {
                 file = fopen(filename.c_str(), "wb+");
                 fclose(file);
                 writePoint = -1;
-                preface temp(ex);
+                preface tmp(pre);
                 file = fopen(filename.c_str(), "rb+");
                 fseek(file, 0, SEEK_SET);
-                fwrite(reinterpret_cast<const char *>(&temp), sizeof(preface), 1, file);
+                fwrite(reinterpret_cast<const char *>(&tmp), sizeof(preface), 1, file);
                 fseek(file, sizeof(preface), SEEK_SET);
                 fwrite(reinterpret_cast<const char *>(&writePoint), sizeof(int), 1, file);
                 fclose(file);
@@ -212,9 +212,9 @@ namespace Geneva {
         }
 
         T read(int offset) {
-            T temp = count_Cache(offset) ? *hashmap[offset]->value : read_File(offset);
-            write_Cache(offset, temp);
-            return temp;
+            T tmp = count_Cache(offset) ? *hashmap[offset]->value : read_File(offset);
+            write_Cache(offset, tmp);
+            return tmp;
         }
 
         int write(const T &o) {
@@ -239,10 +239,10 @@ namespace Geneva {
             file = fopen(filename.c_str(), "wb+");
             fclose(file);
             writePoint = -1;
-            preface temp(ex);
+            preface tmp(ex);
             file = fopen(filename.c_str(), "rb+");
             fseek(file, 0, SEEK_SET);
-            fwrite(reinterpret_cast<const char *>(&temp), sizeof(preface), 1, file);
+            fwrite(reinterpret_cast<const char *>(&tmp), sizeof(preface), 1, file);
             fseek(file, sizeof(preface), SEEK_SET);
             fwrite(reinterpret_cast<const char *>(&writePoint), sizeof(int), 1, file);
             fclose(file);
@@ -251,10 +251,10 @@ namespace Geneva {
         preface readPre() {
             file = fopen(filename.c_str(), "rb+");
             fseek(file, 0, SEEK_SET);
-            preface temp;
-            fread(reinterpret_cast<char *>(&temp), sizeof(preface), 1, file);
+            preface tmp;
+            fread(reinterpret_cast<char *>(&tmp), sizeof(preface), 1, file);
             fclose(file);
-            return temp;
+            return tmp;
         }
 
         void updatePre(const preface &o) {
@@ -269,9 +269,9 @@ namespace Geneva {
             else {
                 file = fopen(filename.c_str(), "rb+");
                 fseek(file, 0, SEEK_END);
-                int tempWritePoint = ftell(file);
+                int tmpWritePoint = ftell(file);
                 fclose(file);
-                return tempWritePoint;
+                return tmpWritePoint;
             }
         }
     };

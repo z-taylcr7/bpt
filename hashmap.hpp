@@ -25,18 +25,18 @@ namespace Geneva{
             memset(heads,0,sizeof(heads));
         }
         ~HashMap(){
-            for(int i=0;i<N;i++){
-                for(node*p=heads[i],*q;p!= nullptr;p=q){
+            for(auto & head : heads){
+                for(node*p=head,*q;p!= nullptr;p=q){
                     q=p->nxt;
                     delete p;
                 }
             }
         }
         void clear(){
-            for(int i=0;i<N;i++){
-                if(heads[i]->nxt)
+            for(auto & head : heads){
+                if(head->nxt)
                 {
-                    for(node*p=heads[i]->nxt,*q;p!= nullptr;p=q){
+                    for(node*p=head->nxt,*q;p!= nullptr;p=q){
                         q=p->nxt;
                         delete p;
                     }

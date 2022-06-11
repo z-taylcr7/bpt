@@ -23,10 +23,10 @@ namespace Geneva{
 
         enum sizeInfo {
             PAGESIZE = 4096,
-            L = 5,
-            //(PAGESIZE - 4 * sizeof(int)) / (sizeof(Key) + sizeof(data)) - 1,
-            M = 5,
-            //(PAGESIZE - 5 * sizeof(int) - sizeof(bool)) / (sizeof(Key) + sizeof(int)) - 1,
+            L = //5,
+            (PAGESIZE - 4 * sizeof(int)) / (sizeof(Key) + sizeof(data)) - 1,
+            M = //5,
+            (PAGESIZE - 5 * sizeof(int) - sizeof(bool)) / (sizeof(Key) + sizeof(int)) - 1,
             MAX_RECORD_NUM = L + 1,
             MIN_RECORD_NUM = (L + 1) / 2,
             MAX_KEY_NUM = M + 1,
@@ -39,19 +39,16 @@ namespace Geneva{
             int size = 0;
         };
         struct splitReturn {
-            Key key;int offset;
+            Key key;int offset=-1;
         };
-        struct findReturn {
-            data value;
-            bool completed;
-        };
+
         struct eraseReturn {
             bool completed;
             bool remakeParent;
         };
         struct insertReturn {
-            bool childIncreased;
-            int offset;
+            bool childIncreased= false;
+            int offset=-1;
             Key key;
         };
         MemoryPool<leafNode, preface>* memoLeaf;
@@ -62,7 +59,7 @@ namespace Geneva{
         class leafNode {
         public:
             Key leafKey[MAX_RECORD_NUM];
-            data leafData[MAX_RECORD_NUM];
+            data leafData[MAX_RECORD_NUM]={0};
             int offset = -1;
             int leftBro = -1, rightBro = -1;
             int sum = 0;
@@ -677,7 +674,6 @@ namespace Geneva{
             return deleted;
         }
         void find(const String&key,vector<long long>&res){
-            int cnt=0;
             Key defaultKey= std::make_pair(key,0);
             if (basicInfo.size == 0 || basicInfo.root == -1)return;
             int index = Geneva::upper_bound(rootNode.nodeKey, rootNode.nodeKey + rootNode.sum, defaultKey);
