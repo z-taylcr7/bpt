@@ -51,6 +51,7 @@ namespace Geneva{
             int offset=-1;
             Key key;
         };
+
         MemoryPool<leafNode, preface>* memoLeaf;
         MemoryPool<innerNode, preface>* memoInner;
         preface basicInfo;
@@ -549,7 +550,7 @@ namespace Geneva{
             }
         };
 
-        void BPFind(int cur, const String &key, vector<long long>&res) {
+        void BPFind(int cur, const String &key, vector<std::pair<int,long long>>&res) {
             //找一数列可行的
 
             Key defaultKey = std::make_pair(key, 0);
@@ -567,7 +568,7 @@ namespace Geneva{
                 }
                 if (target.leafKey[pos].first == key) {
                     while (target.leafKey[pos].first == key) {
-                        res.push_back(target.leafKey[pos].second);
+                        res.push_back(std::make_pair(target.leafData[pos],target.leafKey[pos].second));
                         pos++;
                         if (pos == target.sum) {
                             if (target.rightBro >= 0) {
@@ -673,7 +674,7 @@ namespace Geneva{
             if(deleted)basicInfo.size--;
             return deleted;
         }
-        void find(const String&key,vector<long long>&res){
+        void find(const String&key,vector<std::pair<int,long long>>&res){
             Key defaultKey= std::make_pair(key,0);
             if (basicInfo.size == 0 || basicInfo.root == -1)return;
             int index = Geneva::upper_bound(rootNode.nodeKey, rootNode.nodeKey + rootNode.sum, defaultKey);
@@ -683,7 +684,7 @@ namespace Geneva{
                 if (pos == target.sum)return;
                 if (target.leafKey[pos].first == key) {
                     while(target.leafKey[pos].first == key&&pos<target.sum){
-                        res.push_back(target.leafKey[pos].second);
+                        res.push_back(std::make_pair(target.leafData[pos],target.leafKey[pos].second));
                         pos++;
                         if(pos==target.sum&&(target.rightBro>=0)){
                             pos=0;target=memoLeaf->read(target.rightBro);

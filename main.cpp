@@ -8,6 +8,7 @@ using namespace Geneva;
 int main() {
     BPlusTree<50,50,250> Q("test");
     int n;std::cin>>n;
+
     while(n--){
         std::string command;
         std::cin>>command;
@@ -26,11 +27,11 @@ int main() {
         if(command=="find"){
             String key;
             std::cin>>key;
-            vector<long long>pat;
+            vector<std::pair<int,long long>>pat;
             Q.find(key,pat);
             if(pat.empty())std::cout<<"null";
-            for(long long & i : pat){
-                std::cout<<i<<' ';
+            for(std::pair<int,long long> & i : pat){
+                std::cout<<i.second<<' ';
             }
             std::cout<<std::endl;
         }
