@@ -26,16 +26,16 @@ private:
 public:
     String() { str[0] = '\0'; }
 
-    String(const char &c) { str[0] = c; str[1] = '\0'; }
+    explicit String(const char &c) { str[0] = c; str[1] = '\0'; }
 
-    String(const std::string &str_){
+    explicit String(const std::string &str_){
         int n = str_.length();
         for (int i = 0; i < n; ++i)
             str[i] = str_[i];
         str[n] = '\0';
     }
 
-    String(const char *&&str_){
+    explicit String(const char *&&str_){
         str[0] = '\0';
         strcpy(str, str_);
     }
@@ -69,7 +69,7 @@ public:
         return *this = *this + other;
     }
 
-    operator std::string () const{
+    explicit operator std::string () const{
         return std::string(str) ;
     }
 

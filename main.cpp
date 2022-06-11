@@ -1,12 +1,13 @@
 #include <iostream>
 #include "BPlusTree.hpp"
+#include "ztest.hpp"
+//
 #include <algorithm>
 using namespace Geneva;
 
 int main() {
     BPlusTree<50,50,250> Q("test");
     int n;std::cin>>n;
-
     while(n--){
         std::string command;
         std::cin>>command;

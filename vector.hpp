@@ -80,7 +80,7 @@ public:
 		 * as well as operator-
 		 */
 
-        iterator(vector<T> *vecHead,const int& ptr=0 ) :  vecHead(vecHead) ,ptr(ptr){}
+        explicit iterator(vector<T> *vecHead,const int& ptr=0 ) :  vecHead(vecHead) ,ptr(ptr){}
 		iterator operator+(const int &n) const 
 		{
 			//TODO
