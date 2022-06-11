@@ -58,8 +58,7 @@ void test2(){
 }
 int main() {
     int n;std::cin>>n;
-    test2();
-
+   
     while(n--){
         std::string command;
         std::cin>>command;
