@@ -15,19 +15,17 @@ void test(){
     Q.show();
     for(int i=40;i>0;i-=2){
         Q.remove(std::make_pair(str,i));
-        if(i==38){
-            Q.show();int n;std::cin>>n;
-        }
+
     }
     Q.show();
     std::vector<std::pair<int,long long>>pat;
     Q.find(key,pat);
     if(pat.empty())std::cout<<"null";
     for(std::pair<int,long long> & i : pat){
-        if(i.second%2==0)std::cout<<std::endl;
+        if(i.second%2==0)std::cout<<'\n';
         std::cout<<i.second<<' ';
     }
-    std::cout<<std::endl;
+    std::cout<<'\n';
 
 }
 
@@ -47,32 +45,31 @@ void test2(int x){
         Q.insert(std::make_pair(str2,i),i);
     }
     String key=str;
+    for(int i=2*max+1;i<4*max;i+=2){
+        Q.remove(std::make_pair(str2,i));
+    }
     for(int i=2*max-1;i>0;i-=2){
         Q.remove(std::make_pair(str,i));
     }
-    for(int i=2*max+1;i<4*max;i+=2){
 
-        Q.remove(std::make_pair(str2,i));
-
-    }
     std::vector<std::pair<int,long long>>pat;
     Q.find(key,pat);
     if(pat.empty())std::cout<<"null";
     for(std::pair<int,long long> & i : pat){
-        if(i.second%2==1)std::cout<<i.second<<std::endl;
+        if(i.second%2==1)std::cout<<i.second<<'\n';
     }
     key=str2;
+    std::cout<<"pass"<<' '<<pat.size()<<'\n';
     pat.clear();
     Q.find(key,pat);
     if(pat.empty())std::cout<<"null";
     for(std::pair<int,long long> & i : pat){
-        if(i.second%2==1)std::cout<<i.second<<std::endl;
+        if(i.second%2==1)std::cout<<i.second<<'\n';
     }
-    std::cout<<"pass"<<' ';
+    std::cout<<"pass"<<' '<<pat.size();
 }
 std::vector<std::pair<int, long long>> pat;
 int main() {
-
 
     int n;std::cin>>n;
 
@@ -102,7 +99,7 @@ int main() {
             for(std::pair<int,long long> & i : pat){
                 std::cout<<i.second<<' ';
             }
-            std::cout<<std::endl;
+            std::cout<<'\n';
         }
         if(command=="quit")break;
     }
