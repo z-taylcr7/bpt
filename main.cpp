@@ -5,14 +5,7 @@
 #include <algorithm>
 using namespace Geneva;
 BPlusTree<50,50,250>Q("test");
-void pour(){
-    String ts("Tay");
-    String jzm("Jiang");
-    String diana("JiaRan");
-    for(int i=1989;i<2000;i++)Q.insert(std::make_pair(ts,i),i);
-    for(int i=19260817;i<19260831;i++)Q.insert(std::make_pair(jzm,i),i);
-    for(int i=1;i<=520;i++)Q.insert(std::make_pair(diana,i),i);
-}
+
 int main() {
     int n;std::cin>>n;
     while(n--){
