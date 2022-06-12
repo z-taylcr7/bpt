@@ -11,7 +11,7 @@ namespace Geneva{
 
     template<int M = 100,
 //    (4096 - 5 * sizeof(int) - sizeof(bool)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
-            int L = 3000,
+            int L = 500,
             //          (4096 - 4 * sizeof(int)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
              int CACHESIZE = 250>
     class BPlusTree {
@@ -168,7 +168,7 @@ namespace Geneva{
             void mergeLeft(BPlusTree *Tree, leafNode &left_bro, innerNode &father) {
 
                 left_bro.rightBro = rightBro;
-                if (left_bro.rightBro) {
+                if (left_bro.rightBro>=0) {
                     leafNode tmp = Tree->memoLeaf->read(left_bro.rightBro);
                     tmp.leftBro = left_bro.offset;
                     Tree->memoLeaf->update(tmp, tmp.offset);

@@ -9,13 +9,13 @@ BPlusTree<>Q("test");
 void test(){
     String str("chaokawaii");
     String key=str;
-    for(int i=1;i<=400;i++) {
+    for(int i=1;i<=40;i++) {
         Q.insert(std::make_pair(str, i), i);
     }
     Q.show();
-    for(int i=400;i>0;i-=2){
+    for(int i=40;i>0;i-=2){
         Q.remove(std::make_pair(str,i));
-        if(i==10){
+        if(i==38){
             Q.show();int n;std::cin>>n;
         }
     }
@@ -75,7 +75,7 @@ int main() {
 
 
     int n;std::cin>>n;
-   if(n==-1){test();test2(250);std::cin>>n;}
+
 
         while(n--){
         std::string command;
