@@ -9,10 +9,10 @@
 #define BPLUSTREE_BPLUSTREE_HPP
 namespace Geneva{
 
-    template<int M = 100,
-//    (4096 - 5 * sizeof(int) - sizeof(bool)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
-            int L = 100,
-            //          (4096 - 4 * sizeof(int)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
+    template<  int M = //100,
+  (4096 - 5 * sizeof(int) - sizeof(bool)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
+    int L = //  100,
+                    (4096 - 4 * sizeof(int)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
              int CACHESIZE = 5>
     class BPlusTree {
         ///Announcement:
