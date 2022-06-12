@@ -4,16 +4,20 @@
 #include "utility.hpp"
 #include "String.hpp"
 #include "LRUMemoryPool.hpp"
-#include "vector.hpp"
+#include <vector>
 #ifndef BPLUSTREE_BPLUSTREE_HPP
 #define BPLUSTREE_BPLUSTREE_HPP
 namespace Geneva{
 
-    template<int MM = 50, int LL = 50, int CACHESIZE = 250>
+    template<int M = //100,
+    (4096 - 5 * sizeof(int) - sizeof(bool)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
+            int L = //100,
+            (4096 - 4 * sizeof(int)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
+             int CACHESIZE = 250>
     class BPlusTree {
         ///Announcement:
-        ///go left: <=key
-        ///go right: >key
+        ///go left: <key
+        ///go right: >=key
         using Key=std::pair<String ,long long>;
         using data=int;
 
@@ -23,20 +27,18 @@ namespace Geneva{
 
         enum sizeInfo {
             PAGESIZE = 4096,
-            L = //5,
-            (PAGESIZE - 4 * sizeof(int)) / (sizeof(Key) + sizeof(data)) - 1,
-            M = //5,
-            (PAGESIZE - 5 * sizeof(int) - sizeof(bool)) / (sizeof(Key) + sizeof(int)) - 1,
+
             MAX_RECORD_NUM = L + 1,
-            MIN_RECORD_NUM = (L + 1) / 2,
+            MIN_RECORD_NUM = (L+1) / 2,//   [ Min , Max )
             MAX_KEY_NUM = M + 1,
-            MIN_KEY_NUM = (M + 1) / 2,
-            MAX_CHILD_NUM = M + 2
+            MIN_KEY_NUM = (M - 1) / 2,
+            MAX_CHILD_NUM = M+2
         };
         struct preface {
             int root = -1;
             int head = -1;
             int size = 0;
+
         };
         struct splitReturn {
             Key key;int offset=-1;
@@ -45,6 +47,7 @@ namespace Geneva{
         struct eraseReturn {
             bool completed;
             bool remakeParent;
+
         };
         struct insertReturn {
             bool childIncreased= false;
@@ -165,12 +168,12 @@ namespace Geneva{
             void mergeLeft(BPlusTree *Tree, leafNode &left_bro, innerNode &father) {
 
                 left_bro.rightBro = rightBro;
-                father.sum--;//delete the rightest one
                 if (left_bro.rightBro) {
                     leafNode tmp = Tree->memoLeaf->read(left_bro.rightBro);
                     tmp.leftBro = left_bro.offset;
                     Tree->memoLeaf->update(tmp, tmp.offset);
                 }
+                father.sum--;//delete the rightest one
                 int sum2 = left_bro.sum;
                 for (int i = sum - 1; i >= 0; i--) {
                     left_bro.leafKey[i + sum2] = leafKey[i];
@@ -185,7 +188,6 @@ namespace Geneva{
 
             void mergeRight(BPlusTree *Tree, leafNode &right_bro, innerNode &father, int index) {
                 rightBro = right_bro.rightBro;
-
                 if (right_bro.rightBro>=0) {
                     leafNode tmp = Tree->memoLeaf->read(right_bro.rightBro);
                     tmp.leftBro = offset;
@@ -316,7 +318,7 @@ namespace Geneva{
                 novel.rightBro=rightBro;
                 novel.childIsLeaf = childIsLeaf;
                 novel.offset = Tree->memoInner->getWritePoint();
-                if (rightBro) {
+                if (rightBro>=0) {
                     innerNode tmp = Tree->memoInner->read(rightBro);
                     tmp.leftBro = novel.offset;
                     Tree->memoInner->update(tmp,tmp.offset);
@@ -343,10 +345,9 @@ namespace Geneva{
                     nodeKey[i] = nodeKey[i - 1];
                     Pointer[i] = Pointer[i - 1];
                 }
-                Pointer[sum + 1] = Pointer[sum];
                 nodeKey[0] = father.nodeKey[index-1];
                 Pointer[0] = left_bro.Pointer[left_bro.sum];
-                father.nodeKey[index] = left_bro.nodeKey[left_bro.sum - 1];
+                father.nodeKey[index-1] = left_bro.nodeKey[left_bro.sum - 1];
                 left_bro.sum--;
                 sum++;
                 Tree->memoInner->update(father, father.offset);
@@ -540,7 +541,7 @@ namespace Geneva{
                 return er;
             } else {
                 eraseReturn er{BPErase(curNode.Pointer[index], key)};
-                if (!er.remakeParent || er.completed)return er;
+                if (!er.remakeParent || !er.completed)return er;
                 else {
                     innerNode son = memoInner->read(curNode.Pointer[index]);
                     er.remakeParent = son.resize(this, curNode, index);
@@ -550,7 +551,7 @@ namespace Geneva{
             }
         };
 
-        void BPFind(int cur, const String &key, vector<std::pair<int,long long>>&res) {
+        void BPFind(int cur, const String &key, std::vector<std::pair<int,long long>>&res) {
             //找一数列可行的
 
             Key defaultKey = std::make_pair(key, 0);
@@ -674,7 +675,7 @@ namespace Geneva{
             if(deleted)basicInfo.size--;
             return deleted;
         }
-        void find(const String&key,vector<std::pair<int,long long>>&res){
+        void find(const String&key,std::vector<std::pair<int,long long>>&res){
             Key defaultKey= std::make_pair(key,0);
             if (basicInfo.size == 0 || basicInfo.root == -1)return;
             int index = Geneva::upper_bound(rootNode.nodeKey, rootNode.nodeKey + rootNode.sum, defaultKey);

@@ -102,7 +102,7 @@ namespace Geneva {
         using node_t = typename DoublyLinkedList::Node;
         const string filename;
         FILE *file;
-        int writePoint;
+        int writePoint=-1;
 
 
         HashMap<int, node_t*> hashmap;
@@ -139,7 +139,7 @@ namespace Geneva {
         int write_File(const T &o) {
             int offset;
             file = fopen(filename.c_str(), "rb+");
-            if (writePoint < 0) {
+            if (writePoint <= 0) {
                 fseek(file, 0, SEEK_END);
                 offset = ftell(file);
             } else {
@@ -185,7 +185,7 @@ namespace Geneva {
         explicit MemoryPool(const string &_filename, const preface &pre = preface{}, int _capacity = 120)
                 : filename(_filename), cache(_capacity), hashmap() {
             file = fopen(filename.c_str(), "rb");
-            if (file == nullptr) {
+            if (file == NULL) {
                 file = fopen(filename.c_str(), "wb+");
                 fclose(file);
                 writePoint = -1;
