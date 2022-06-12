@@ -11,7 +11,7 @@ namespace Geneva{
 
     template<int M = 50,
 //    (4096 - 5 * sizeof(int) - sizeof(bool)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
-            int L = 3000,
+            int L = 5000,
             //          (4096 - 4 * sizeof(int)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
              int CACHESIZE = 250>
     class BPlusTree {
