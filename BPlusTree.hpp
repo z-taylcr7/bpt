@@ -3,7 +3,7 @@
 //
 #include "utility.hpp"
 #include "String.hpp"
-#include "LRUMemoryPool.hpp"
+#include "Memory.hpp"
 #include <vector>
 #ifndef BPLUSTREE_BPLUSTREE_HPP
 #define BPLUSTREE_BPLUSTREE_HPP
@@ -13,7 +13,7 @@ namespace Geneva{
 //    (4096 - 5 * sizeof(int) - sizeof(bool)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
             int L = 5000,
             //          (4096 - 4 * sizeof(int)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
-             int CACHESIZE = 5>
+             int CACHESIZE = 350>
     class BPlusTree {
         ///Announcement:
         ///go left: <key
@@ -604,8 +604,8 @@ namespace Geneva{
 
     public:
         explicit BPlusTree(const std::string &fn) :
-                memoLeaf(new MemoryPool<leafNode, preface>(fn + "'s leaves", preface{-1,-1,0},CACHESIZE)),
-                memoInner(new MemoryPool<innerNode, preface>(fn + "'s inners", preface{-1,-1,0},CACHESIZE)),
+                memoLeaf(new MemoryPool<leafNode, preface>(fn + "'s leaves", preface{-1,-1,0})),
+                memoInner(new MemoryPool<innerNode, preface>(fn + "'s inners", preface{-1,-1,0})),
                 basicInfo(memoLeaf->readPre()),
                 rootNode(basicInfo.root == -1 ? innerNode{} : memoInner->read(basicInfo.root)) {
 

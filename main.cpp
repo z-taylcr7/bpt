@@ -70,6 +70,7 @@ void test2(int x){
 }
 std::vector<std::pair<int, long long>> pat;
 int main() {
+    test2(25000);return 0;
 
     int n;std::cin>>n;
 
