@@ -15,6 +15,9 @@ void test(){
     Q.show();
     for(int i=400;i>0;i-=2){
         Q.remove(std::make_pair(str,i));
+        if(i==10){
+            Q.show();int n;std::cin>>n;
+        }
     }
     Q.show();
     std::vector<std::pair<int,long long>>pat;
@@ -74,7 +77,7 @@ int main() {
     int n;std::cin>>n;
    if(n==-1){test();test2(250);std::cin>>n;}
 
-    while(n--){
+        while(n--){
         std::string command;
         std::cin>>command;
         if(command=="show")Q.show();
