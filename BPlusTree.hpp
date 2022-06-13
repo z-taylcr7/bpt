@@ -3,22 +3,23 @@
 //
 #include "utility.hpp"
 #include "String.hpp"
-#include "Memory.hpp"
-#include <vector>
+#include "LRUMemoryPool.hpp"
+#include "vector.hpp"
 #ifndef BPLUSTREE_BPLUSTREE_HPP
 #define BPLUSTREE_BPLUSTREE_HPP
 namespace Geneva{
 
-    template<int M = 100,
+    template<int M = 200,
+
 //    (4096 - 5 * sizeof(int) - sizeof(bool)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
-            int L = 100,
+            int L = 200,
             //          (4096 - 4 * sizeof(int)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
-             int CACHESIZE = 350>
+            int CACHESIZE = 100>
     class BPlusTree {
         ///Announcement:
         ///go left: <key
         ///go right: >=key
-        using Key=std::pair<String ,long long>;
+        using Key=std::pair<unsigned long long,long long>;
         using data=int;
 
         class leafNode;
@@ -27,7 +28,6 @@ namespace Geneva{
 
         enum sizeInfo {
             PAGESIZE = 4096,
-
             MAX_RECORD_NUM = L + 1,
             MIN_RECORD_NUM = (L+1) / 2,//   [ Min , Max )
             MAX_KEY_NUM = M + 1,
@@ -38,10 +38,14 @@ namespace Geneva{
             int root = -1;
             int head = -1;
             int size = 0;
+            preface()=default;
+            preface(const int&_root,const int&_head,const int&_size):root(_root),head(_head),size(_size){}
 
         };
         struct splitReturn {
             Key key;int offset=-1;
+            splitReturn()=default;
+            splitReturn(const Key&_key,const int&_oo):key(_key),offset(_oo){}
         };
 
         struct removeReturn {
@@ -486,21 +490,28 @@ namespace Geneva{
 
     private:
         void initialize(const Key &key, const data &val) {
+
+//        	puts("BPlusTree initialize here");
             rootNode.offset = memoInner->getWritePoint();
+//            puts("1");
             rootNode.childIsLeaf = true;
             rootNode.Pointer[0] = memoLeaf->getWritePoint();
+//            puts("2");
             memoInner->write(rootNode);
+//            puts("3");
             leafNode tempNode;
             tempNode.offset = rootNode.Pointer[0];
             tempNode.sum = 1;
             tempNode.leafKey[0] = key;
             tempNode.leafData[0] = val;
             memoLeaf->write(tempNode);
+//            puts("4");
             basicInfo.head = tempNode.offset;
             basicInfo.root = rootNode.offset;
         }
 
         insertReturn BPInsert(int cur, const Key &k, const data &v) {
+            std::cout<<"BPInserting here"<<std::endl;
             innerNode curNode(memoInner->read(cur));
             int index = Geneva::upper_bound(curNode.nodeKey, curNode.nodeKey + curNode.sum, k);
             if (curNode.childIsLeaf) {
@@ -540,7 +551,7 @@ namespace Geneva{
                 er.remakeParent = toRemove.resize(this, curNode, index);
                 return er;
             } else {
-                removeReturn er{BPRemove(curNode.Pointer[index], key)};
+                removeReturn er=BPRemove(curNode.Pointer[index], key) ;
                 if (!er.remakeParent || !er.completed)return er;
                 else {
                     innerNode son = memoInner->read(curNode.Pointer[index]);
@@ -551,10 +562,10 @@ namespace Geneva{
             }
         };
 
-        void BPFind(int cur, const String &key, std::vector<std::pair<int,long long>>&res) {
+        void BPFind(int cur, const unsigned long long&key,vector<std::pair<int,long long>>&res) {
             //找一数列可行的
 
-            Key defaultKey = std::make_pair(key, 0);
+            Key defaultKey = std::make_pair(key, -9223372036854775808ll);
             innerNode curNode(memoInner->read(cur));
             int index = Geneva::upper_bound(curNode.nodeKey, curNode.nodeKey + curNode.sum, defaultKey);
             if (curNode.childIsLeaf) {
@@ -603,13 +614,14 @@ namespace Geneva{
         };
 
     public:
-        explicit BPlusTree(const std::string &fn) :
-                memoLeaf(new MemoryPool<leafNode, preface>(fn + "'s leaves", preface{-1,-1,0})),
-                memoInner(new MemoryPool<innerNode, preface>(fn + "'s inners", preface{-1,-1,0})),
-                basicInfo(memoLeaf->readPre()),
-                rootNode(basicInfo.root == -1 ? innerNode{} : memoInner->read(basicInfo.root)) {
+        BPlusTree()=default;
+        explicit BPlusTree(const std::string &fn) {
+            memoLeaf=new MemoryPool<leafNode, preface>(fn + "'s leaves", (preface){-1,-1,0},CACHESIZE);
+            memoInner=new MemoryPool<innerNode, preface>(fn + "'s inners", (preface){-1,-1,0},CACHESIZE);
+            basicInfo=memoLeaf->readPre();
+            rootNode=basicInfo.root == -1 ? innerNode{} : memoInner->read(basicInfo.root);
 
-        };
+        }
 
         ~BPlusTree() {
             memoLeaf->updatePre(basicInfo);
@@ -634,16 +646,28 @@ namespace Geneva{
         }
 
         void insert(const Key &key, const data &val) {
+
+//        	puts("BPlusTree insert here");
             basicInfo.size++;
             if (basicInfo.root == -1){
                 initialize(key, val);return;
             }
+            std::cout<<"upper_bounding here"<<std::endl;
             int index = Geneva::upper_bound(rootNode.nodeKey, rootNode.nodeKey + rootNode.sum, key);
+            std::cout<<"upper_bounding finished"<<std::endl;
             if (rootNode.childIsLeaf) {
+                std::cout<<"GG1 here"<<std::endl;
                 leafNode lf = memoLeaf->read(rootNode.Pointer[index]);
+                std::cout<<"GG2 here"<<std::endl;
                 lf.addElement(this, key, val);
-                if (lf.sum == MAX_RECORD_NUM)rootNode.addElement(this,lf.splitNode(this),index);
-                if (rootNode.sum == MAX_KEY_NUM)rootNode.splitRoot(this);
+                std::cout<<"GG3 here"<<std::endl;
+                if (lf.sum == MAX_RECORD_NUM){
+                    rootNode.addElement(this,lf.splitNode(this),index);
+                }
+                if (rootNode.sum == MAX_KEY_NUM){
+                    std::cout<<"rootNode.splitRoot here"<<std::endl;
+                    rootNode.splitRoot(this);
+                }
             } else {
                 insertReturn ir = BPInsert(rootNode.Pointer[index], key, val);
                 if (ir.childIncreased) {
@@ -675,12 +699,12 @@ namespace Geneva{
             if(deleted)basicInfo.size--;
             return deleted;
         }
-        void find(const String&key,std::vector<std::pair<int,long long>>&res){
-            Key defaultKey= std::make_pair(key,0);
+        void find(const unsigned long long&key,vector<std::pair<int,long long>>&res){
+            Key defaultKey= std::make_pair(key,-9223372036854775808ll);
             if (basicInfo.size == 0 || basicInfo.root == -1)return;
             int index = Geneva::upper_bound(rootNode.nodeKey, rootNode.nodeKey + rootNode.sum, defaultKey);
             if (rootNode.childIsLeaf) {
-                leafNode target {memoLeaf->read(rootNode.Pointer[index])};
+                leafNode target=memoLeaf->read(rootNode.Pointer[index]);
                 int pos = Geneva::lower_bound(target.leafKey, target.leafKey + target.sum, defaultKey);
                 if (pos == target.sum) {
                     if (target.rightBro >= 0) {
@@ -705,6 +729,7 @@ namespace Geneva{
                 BPFind(rootNode.Pointer[index], key,res);return;
             }
         }
+        bool remove(const Key&key,const int&id){return remove(key);}
         void update(const Key&key,const data& val){
             if (basicInfo.size == 0 || basicInfo.root == -1)return ;
             int index = Geneva::upper_bound(rootNode.nodeKey, rootNode.nodeKey + rootNode.sum, key);
@@ -761,4 +786,5 @@ namespace Geneva{
 
 }
 
+using namespace  Geneva;
 #endif //BPLUSTREE_BPLUSTREE_HPP

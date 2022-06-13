@@ -65,7 +65,7 @@ namespace Geneva{
         for(std::pair<int,long long> & i : pat){
             if(i.second%2==1)std::cout<<i.second<<std::endl;
         }
-        std::cout<<"pass"<<' ';
+        std::cout<<"end"<<' ';
     }
 }
 #endif //BPLUSTREE_ZTEST_HPP

@@ -7,19 +7,19 @@
 using namespace Geneva;
 BPlusTree<>Q("test");
 void test(){
-    String str("chaokawaii");
-    String key=str;
+    string str("chaokawaii");
+    string key=str;
     for(int i=1;i<=40;i++) {
-        Q.insert(std::make_pair(str, i), i);
+        Q.insert(std::make_pair(stringHash(str), i), i);
     }
     Q.show();
     for(int i=40;i>0;i-=2){
-        Q.remove(std::make_pair(str,i));
+        Q.remove(std::make_pair(stringHash(str),i));
 
     }
     Q.show();
-    std::vector<std::pair<int,long long>>pat;
-    Q.find(key,pat);
+    vector<std::pair<int,long long>>pat;
+    Q.find(stringHash(key),pat);
     if(pat.empty())std::cout<<"null";
     for(std::pair<int,long long> & i : pat){
         if(i.second%2==0)std::cout<<'\n';
@@ -30,30 +30,30 @@ void test(){
 }
 
 void show20(){
-    String ts("Tay");
-    for(int i=1;i<20;i++)Q.insert(std::make_pair(ts,i),i);
+    string ts("Tay");
+    for(int i=1;i<20;i++)Q.insert(std::make_pair(stringHash(ts),i),i);
     Q.show();
 }
 void test2(int x){
-    String str("chao");
-    String str2("chaochao");
+    string str("chao");
+    string str2("chaochao");
     int max=x;
     for(int i=1;i<=2*max;i++){
-        Q.insert(std::make_pair(str,i),i);
+        Q.insert(std::make_pair(stringHash(str),i),i);
     }
     for(int i=4*max;i>2*max;i--){
-        Q.insert(std::make_pair(str2,i),i);
+        Q.insert(std::make_pair(stringHash(str2),i),i);
     }
-    String key=str;
+    string key=str;
     for(int i=2*max+1;i<4*max;i+=2){
-        Q.remove(std::make_pair(str2,i));
+        Q.remove(std::make_pair(stringHash(str2),i));
     }
     for(int i=2*max-1;i>0;i-=2){
-        Q.remove(std::make_pair(str,i));
+        Q.remove(std::make_pair(stringHash(str),i));
     }
 
-    std::vector<std::pair<int,long long>>pat;
-    Q.find(key,pat);
+    vector<std::pair<int,long long>>pat;
+    Q.find(stringHash(key),pat);
     if(pat.empty())std::cout<<"null";
     for(std::pair<int,long long> & i : pat){
         if(i.second%2==1)std::cout<<i.second<<'\n';
@@ -61,40 +61,37 @@ void test2(int x){
     key=str2;
     std::cout<<"pass"<<' '<<pat.size()<<'\n';
     pat.clear();
-    Q.find(key,pat);
+    Q.find(stringHash(key),pat);
     if(pat.empty())std::cout<<"null";
     for(std::pair<int,long long> & i : pat){
         if(i.second%2==1)std::cout<<i.second<<'\n';
     }
     std::cout<<"pass"<<' '<<pat.size();
 }
-std::vector<std::pair<int, long long>> pat;
 int main() {
-
+    vector<std::pair<int, long long>> pat;
     int n;std::cin>>n;
-
-
         while(n--){
         std::string command;
         std::cin>>command;
         if(command=="show")Q.show();
         if(command=="insert"){
-            String key;
+            string key;
             int value;
             std::cin>>key>>value;
-            Q.insert(std::make_pair(key,value),1);
+            Q.insert(std::make_pair(stringHash(key),value),1);
         }
         if(command=="delete"){
-            String key;
+            string key;
             int value;
             std::cin>>key>>value;
-            Q.remove(std::make_pair(key,value));
+            Q.remove(std::make_pair(stringHash(key),value));
         }
         if(command=="find"){
-            String key;
+            string key;
             std::cin>>key;
             pat.clear();
-            Q.find(key,pat);
+            Q.find(stringHash(key),pat);
             if(pat.empty())std::cout<<"null";
             for(std::pair<int,long long> & i : pat){
                 std::cout<<i.second<<' ';
