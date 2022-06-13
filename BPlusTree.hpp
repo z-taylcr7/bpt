@@ -511,7 +511,6 @@ namespace Geneva{
         }
 
         insertReturn BPInsert(int cur, const Key &k, const data &v) {
-            std::cout<<"BPInserting here"<<std::endl;
             innerNode curNode(memoInner->read(cur));
             int index = Geneva::upper_bound(curNode.nodeKey, curNode.nodeKey + curNode.sum, k);
             if (curNode.childIsLeaf) {
@@ -652,20 +651,14 @@ namespace Geneva{
             if (basicInfo.root == -1){
                 initialize(key, val);return;
             }
-            std::cout<<"upper_bounding here"<<std::endl;
             int index = Geneva::upper_bound(rootNode.nodeKey, rootNode.nodeKey + rootNode.sum, key);
-            std::cout<<"upper_bounding finished"<<std::endl;
             if (rootNode.childIsLeaf) {
-                std::cout<<"GG1 here"<<std::endl;
                 leafNode lf = memoLeaf->read(rootNode.Pointer[index]);
-                std::cout<<"GG2 here"<<std::endl;
                 lf.addElement(this, key, val);
-                std::cout<<"GG3 here"<<std::endl;
                 if (lf.sum == MAX_RECORD_NUM){
                     rootNode.addElement(this,lf.splitNode(this),index);
                 }
                 if (rootNode.sum == MAX_KEY_NUM){
-                    std::cout<<"rootNode.splitRoot here"<<std::endl;
                     rootNode.splitRoot(this);
                 }
             } else {
