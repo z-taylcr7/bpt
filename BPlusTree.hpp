@@ -652,25 +652,25 @@ namespace Geneva{
                 initialize(key, val);return;
             }
 
-​			rootNode=memoInner->read(basicInfo.root);
-​            int index = Geneva::upper_bound(rootNode.nodeKey, rootNode.nodeKey + rootNode.sum, key);
-​            if (rootNode.childIsLeaf) {
-​                leafNode lf = memoLeaf->read(rootNode.Pointer[index]);
-​                lf.addElement(this, key, val);
-​                if (lf.sum == MAX_RECORD_NUM){
-​                    rootNode.addElement(this,lf.splitNode(this),index);
-​                }
-​                if (rootNode.sum == MAX_KEY_NUM){
-​                    rootNode.splitRoot(this);
-​                }
-​            } else {
-​                insertReturn ir = BPInsert(rootNode.Pointer[index], key, val);
-​                if (ir.childIncreased) {
-​                    rootNode.addElement(this, {ir.key, ir.offset}, index);
-​                    if (rootNode.sum == MAX_KEY_NUM)rootNode.splitRoot(this);
-​                }
-​            }
-​        }
+		   rootNode=memoInner->read(basicInfo.root);
+            int index = Geneva::upper_bound(rootNode.nodeKey, rootNode.nodeKey + rootNode.sum, key);
+            if (rootNode.childIsLeaf) {
+                leafNode lf = memoLeaf->read(rootNode.Pointer[index]);
+                lf.addElement(this, key, val);
+                if (lf.sum == MAX_RECORD_NUM){
+                    rootNode.addElement(this,lf.splitNode(this),index);
+                }
+                if (rootNode.sum == MAX_KEY_NUM){
+                    rootNode.splitRoot(this);
+                }
+            } else {
+                insertReturn ir = BPInsert(rootNode.Pointer[index], key, val);
+                if (ir.childIncreased) {
+                    rootNode.addElement(this, {ir.key, ir.offset}, index);
+                    if (rootNode.sum == MAX_KEY_NUM)rootNode.splitRoot(this);
+                }
+            }
+        }
 
         bool remove(const Key &key) {
             if (basicInfo.size == 0 || basicInfo.root == -1)return false;
