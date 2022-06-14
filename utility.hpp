@@ -36,12 +36,7 @@ namespace Geneva{
         }
         return ans;
     }
-    unsigned long long stringHash(const std::string& hash_in)
-    {
-        unsigned long long res=0;
-        for(auto it:hash_in)res=(res<<16)+res+(unsigned int)it;
-        return res;
-    }
+
 
 }
 #ifndef SJTU_UTILITY_HPP
