@@ -69,7 +69,6 @@ void test2(int x){
     std::cout<<"pass"<<' '<<pat.size();
 }
 int main() {
-    test2(300);return 0;
     vector<std::pair<int, long long>> pat;
     int n;std::cin>>n;
         while(n--){
