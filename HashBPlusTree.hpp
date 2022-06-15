@@ -11,12 +11,12 @@ namespace Geneva{
 
     unsigned long long stringHash(const std::string&);
 
-    template<int M = 200,
+    template<int M =  200,
 
-//    (4096 - 5 * sizeof(int) - sizeof(bool)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
-            int L = 200,
-            //          (4096 - 4 * sizeof(int)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
-            int CACHESIZE = 200>
+    // (4096 - 5 * sizeof(int) - sizeof(bool)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
+            int L =   200,
+            //         (4096 - 4 * sizeof(int)) / (sizeof(String)+sizeof(long long)+ sizeof(int)) - 1,
+            int CACHESIZE = 250>
     class BPlusTree {
         ///Announcement:
         ///go left: <key
@@ -267,7 +267,7 @@ namespace Geneva{
                 std::cout << "sum: " << sum << std::endl;
                 std::cout << "leafKey & leafData:" << std::endl;
                 for (int i = 0; i < sum; i++) {
-                    std::cout << "leafKey: " << leafKey[i].second << "\t\t\t\t\t\t\t\t\t\t\t" << "leafData: " << leafData[i] << std::endl;
+                    std::cout << "leafKey: " << leafKey[i].first<<'|'<<leafKey[i].second << "\t\t\t\t\t\t\t\t\t\t\t" << "leafData: " << leafData[i] << std::endl;
                 }
                 std::cout << std::endl;
             }
@@ -277,8 +277,8 @@ namespace Geneva{
         public:
             int leftBro = -1;
             int rightBro = -1;
-            Key nodeKey[MAX_RECORD_NUM];
-            int Pointer[MAX_RECORD_NUM+1] = {0};
+            Key nodeKey[MAX_KEY_NUM+1];
+            int Pointer[MAX_KEY_NUM+2] = {0};
             int offset = -1;
             int sum = 0;//number of nodeKeys
 
@@ -297,7 +297,7 @@ namespace Geneva{
 
             void splitRoot(BPlusTree *Tree) {
                 innerNode novel, newroot;
-             //   std::cout<<"rootNode.splitRoot here"<<std::endl;
+                //   std::cout<<"rootNode.splitRoot here"<<std::endl;
 
                 newroot.offset = Tree->memoInner->write(newroot);
                 novel.offset = rightBro = Tree->memoInner->getWritePoint();
@@ -516,7 +516,7 @@ namespace Geneva{
         }
 
         insertReturn BPInsert(int cur, const Key &k, const data &v) {
-         //   std::cout<<"BPInserting here"<<std::endl;
+            //   std::cout<<"BPInserting here"<<std::endl;
             innerNode curNode(memoInner->read(cur));
             int index = Geneva::upper_bound(curNode.nodeKey, curNode.nodeKey + curNode.sum, k);
             if (curNode.childIsLeaf) {
@@ -658,23 +658,23 @@ namespace Geneva{
                 initialize(key, val);return;
             }
             rootNode=memoInner->read(basicInfo.root);
-           // std::cout<<"upper_bounding here"<<std::endl;
+            // std::cout<<"upper_bounding here"<<std::endl;
             int index = Geneva::upper_bound(rootNode.nodeKey, rootNode.nodeKey + rootNode.sum, key);
             //std::cout<<"upper_bounding finished"<<std::endl;
             if (rootNode.childIsLeaf) {
                 //std::cout<<"GG1 here"<<std::endl;
                 leafNode lf = memoLeaf->read(rootNode.Pointer[index]);
-               // std::cout<<"GG2 here"<<std::endl;
+                // std::cout<<"GG2 here"<<std::endl;
 
                 lf.addElement(this, key, val);
 
-               // std::cout<<"GG3 here"<<std::endl;
+                // std::cout<<"GG3 here"<<std::endl;
                 if (lf.sum == MAX_RECORD_NUM){
                     rootNode.addElement(this,lf.splitNode(this),index);
                 }
 
                 if (rootNode.sum == MAX_KEY_NUM){
-              //      std::cout<<"rootNode.splitRoot here"<<std::endl;
+                    //      std::cout<<"rootNode.splitRoot here"<<std::endl;
                     rootNode.splitRoot(this);
                 }
             } else {
